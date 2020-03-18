@@ -113,23 +113,83 @@ namespace mdt112_assignment2
         }
     }
 
-    class Quiz{
+    class Quiz
+    {
         ///<summary>
         ///This function sort given garbage list by its size ascendingly 
         ///from small, medium to large with an option to sort reversely.
         ///</summary>
-        public static List<Garbage> SortGarbageListBySize( List<Garbage> garbageList, bool isReverse ){
-            
-            return garbageList;
+        public static List<Garbage> SortGarbageListBySize(List<Garbage> garbageList, bool isReverse)
+        {
+            List<Garbage> outputgarbageList = new List<Garbage>();
+
+            for (int i = 0; i < garbageList.Count; i++)
+            {
+                Size a = garbageList[i].GetSize();
+
+                if (a == Size.SMALL)
+                {
+                    outputgarbageList.Add(garbageList[i]);
+                }
+            }
+            for (int j = 0; j < garbageList.Count; j++)
+            {
+                Size a = garbageList[j].GetSize();
+
+                if (a == Size.MEDIUM)
+                {
+                    outputgarbageList.Add(garbageList[j]);
+                }
+            }
+            for (int k = 0; k < garbageList.Count; k++)
+            {
+                Size a = garbageList[k].GetSize();
+
+                if (a == Size.LARGE)
+                {
+                    outputgarbageList.Add(garbageList[k]);
+                }
+            }
+
+            if (isReverse == true)
+            {
+
+                outputgarbageList.Reverse();
+            }
+            else
+            {
+
+            }
+            foreach (Garbage garbageout in outputgarbageList)
+            {
+                Console.WriteLine("{0}({1},{2})", garbageout, garbageout.Label, garbageout.GetSize());
+            }
+            Console.WriteLine();
+            return outputgarbageList;
         }
+    
 
         ///<summary>
         ///This function filter out only sellable garbage from given
         ///garbage list.
         ///</summary>
-        public static List<Garbage> GetSellableGarbageList( List<Garbage> garbageList ){
-            //  NOTE: Read more on this link https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/keywords/is
-            return garbageList;
+        public static List<Garbage> GetSellableGarbageList( List<Garbage> garbageList )
+        {
+            List<Garbage> outputgarbageList = new List<Garbage>();
+            for (int i = 0; i < garbageList.Count; i++)
+            {
+                if(garbageList[i] is ISellable)
+                {
+                    outputgarbageList.Add(garbageList[i]);
+                }
+            }
+            foreach (Garbage garbageout in outputgarbageList)
+            {
+                Console.WriteLine(garbageout.Label);
+            }
+            Console.WriteLine();
+
+            return outputgarbageList;
         }
 
         ///<summary>
@@ -138,9 +198,83 @@ namespace mdt112_assignment2
         ///material garbages that are sellable, yet there is a
         ///disassemblement cost to pay.
         ///</summary>
-        public static float ComputeMaximumSellPrice( List<Garbage> garbageList ){
+        public static float ComputeMaximumSellPrice( List<Garbage> garbageList )
+        {
+
             //  NOTE: Read more on this link https://docs.microsoft.com/en-us/dotnet/csharp/programming-guide/types/casting-and-type-conversions
-            return 0.0f;
+            List<MaterialGarbage> outputgarbageList = new List<MaterialGarbage>();
+            List<float> outputgarbageListPrice = new List<float>();
+            for (int i = 0; i < garbageList.Count; i++)
+            {
+                if (garbageList[i] is ISellable)
+                {
+                    if (garbageList[i] is IDisassemblable)
+                    {
+                        ElectronicsGarbage output = (ElectronicsGarbage)garbageList[i];
+                        outputgarbageList = output.Disassemble();
+                        float DisassemblePrice = 0.0f;
+                        float price = 0.0f;
+                        for (int j = 0; j < outputgarbageList.Count; j++)
+                        {
+                            price = outputgarbageList[j].GetSellPrice();
+                            DisassemblePrice = DisassemblePrice + price;
+                        }
+                        Size a = output.GetSize();
+                        
+                        if (a == Size.SMALL)
+                        {
+                             float m = 1.2f;
+                             float Price = output.GetSellPrice() + DisassemblePrice - (m * output.GetDisassembleCost());
+                            outputgarbageListPrice.Add(Price);
+                        }
+                        else if (a == Size.MEDIUM)
+                        {
+                             float m = 1.4f;
+                            float Price = output.GetSellPrice() + DisassemblePrice - (m * output.GetDisassembleCost());
+                            outputgarbageListPrice.Add(Price);
+                        }
+                        else if (a == Size.LARGE)
+                        {
+                             float m = 1.6f;
+                            float Price = output.GetSellPrice() + DisassemblePrice - (m * output.GetDisassembleCost());
+                            outputgarbageListPrice.Add(Price);
+                        }
+                        
+
+                       
+                    }
+                    else if(garbageList[i] is GlassBottleGarbage)
+                    {
+                        GlassBottleGarbage output = (GlassBottleGarbage)garbageList[i];
+                        float Price = output.GetSellPrice();
+
+                        outputgarbageListPrice.Add(Price);
+                    }
+                    else
+                    { 
+                        MaterialGarbage output = (MaterialGarbage)garbageList[i];
+                        float Price = output.GetSellPrice();
+
+                        outputgarbageListPrice.Add(Price);
+                    }
+                }
+               
+                
+                
+            }
+            float MaxSellPrice = 0;
+            foreach (float Max in outputgarbageListPrice)
+            {
+
+                if (Max > MaxSellPrice)
+                {
+                    MaxSellPrice = Max;
+                }
+                
+
+            }
+            Console.WriteLine(MaxSellPrice);
+            return MaxSellPrice;
         }
     }
 
@@ -220,10 +354,12 @@ namespace mdt112_assignment2
 
         static void Main(string[] args)
         {
+            
             TestCase1();
             TestCase2();
             TestCase3();
             TestCase4();
+            //test
         }
     }
 }
